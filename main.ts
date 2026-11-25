@@ -1,9 +1,12 @@
 import { mkdirSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 
-// Title: "The Bird Flinches"
+// Title: "The Hand Arrives First"
+// The wonder is a real, checkable mechanism: an escalator's handrail
+// genuinely drifts a fraction faster than its steps, so your hand
+// reaches the top before the rest of you does.
 const ENTRY =
-  "The bus's turn signal clicks not for the driver, but for a bird perched on a wire who flinches each time.";
+  "The escalator handrail moves a fraction faster than the steps, so my hand arrives at the top a little before I do.";
 
 const MAX_LENGTH = 200;
 const OUTPUT_FILE_NAME = "entry.txt";
@@ -37,7 +40,15 @@ function selfTest(): boolean {
     { name: "whitespace-only", text: "   \t ", shouldPass: false },
     { name: "201 chars", text: "a".repeat(201), shouldPass: false },
     { name: "trailing newline", text: ENTRY + "\n", shouldPass: false },
+    // The entry must stay one sentence: no internal sentence break.
+    { name: "no second sentence", text: ENTRY, shouldPass: !/[.!?]\s+[A-Z]/.test(ENTRY) },
   ];
+  // The turn must survive: hand arrives before the body does.
+  const turnIntact = ENTRY.includes("handrail") && ENTRY.endsWith("before I do.");
+  if (!turnIntact) {
+    console.log("FAIL entry turn");
+    return false;
+  }
   let allOk = true;
   for (const c of cases) {
     const ok = isValid(c.text) === c.shouldPass;
